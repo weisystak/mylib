@@ -31,4 +31,16 @@ int main()
         timer_guard tg(__LINE__);
         fibonacci(20);
     }
-}
+
+    // example 3
+    using microseconds = std::chrono::duration<double, std::micro>; // or replace std::micro with std::ratio<1, 1'000'000>
+    auto dur = new std::chrono::steady_clock::duration;
+    {
+        timer_guard tg(dur);
+        fibonacci(20);
+    }
+    std::cout << microseconds(*dur).count() << " [µs]"<< std::endl;  // 71.448 [µs]
+    std::cout<< std::chrono::duration_cast<std::chrono::nanoseconds>(*dur).count() / 1'000.0 << std::endl; // 71.448
+    std::cout<< std::chrono::duration_cast<std::chrono::microseconds>(*dur).count() << std::endl; // 71 (precision loss)
+
+} 
