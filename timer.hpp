@@ -17,7 +17,23 @@ public:
         m_bRunning = false;
     }
     
-    double elapsedMicorseconds()
+    double elapsedNanoseconds()
+    {
+        std::chrono::time_point<std::chrono::steady_clock> endTime;
+        
+        if(m_bRunning)
+        {
+            endTime = std::chrono::steady_clock::now();
+        }
+        else
+        {
+            endTime = m_EndTime;
+        }
+        
+        return std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - m_StartTime).count();
+    }
+
+    double elapsedMicroseconds()
     {
         std::chrono::time_point<std::chrono::steady_clock> endTime;
         
@@ -35,7 +51,7 @@ public:
 
     double elapsedMilliseconds()
     {
-        return elapsedMicorseconds() / 1000.0;
+        return elapsedMicroseconds() / 1000.0;
     }
     
     double elapsedSeconds()
@@ -69,8 +85,11 @@ public:
             std::cout<<timer.elapsedSeconds()<<" [s]"<<"\n";
         else if(timer.elapsedMilliseconds()>=0.1)
             std::cout<<timer.elapsedMilliseconds()<<" [ms]"<<"\n";
+        else if(timer.elapsedMicroseconds()>=0.1)
+            std::cout<<timer.elapsedMicroseconds()<<" [µs]"<<"\n";
         else
-            std::cout<<timer.elapsedMicorseconds()<<" [µs]"<<"\n";
+            std::cout<<timer.elapsedNanoseconds()<<" [ns]"<<"\n";
+
 
     }
 private:
