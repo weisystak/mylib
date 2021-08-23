@@ -28,7 +28,7 @@ int main()
 
     // example 2
     {
-        timer_guard tg(__LINE__);
+        timer_guard tg{};
         fibonacci(20);
     }
 

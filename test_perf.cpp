@@ -11,4 +11,5 @@ int main()
     // pf::TD<decltype(f)> ftype;
     auto func =  [f=bm::fibonacci](int n){ (f)(n); };
     pf::measure m(func);
+    m.print();
 }

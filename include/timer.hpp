@@ -2,6 +2,8 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <source_location>
+#include <sstream>
 
 class Timer
 {
@@ -63,17 +65,24 @@ private:
 
 class timer_guard{
 public:
-    timer_guard(std::string name="unknown")
-    :name(name)
+    timer_guard(std::string name)
+    :name(name), dur(nullptr)
     {
         timer.start();
     }
-    timer_guard(int line)
-    :line(line)
+    timer_guard(const std::source_location location = 
+               std::source_location::current())
+    :dur(nullptr)
     {
+        std::stringstream ss;
+        ss    <<"\e[1m"
+              << location.file_name() << ":"
+              << location.line() << ":"
+              << location.column() << ":\e[0m";
+        line = ss.str();
         timer.start();
     }
-    timer_guard(std::chrono::steady_clock::duration* dur=nullptr)
+    timer_guard(std::chrono::steady_clock::duration* dur)
     :dur(dur)
     {
         timer.start();
@@ -86,7 +95,7 @@ public:
         else if(!name.empty())
             std::cout<<name<<" elapsed: ";
         else
-            std::cout<<"line "<<line<<" block elapesd: ";
+            std::cout<<line<<" block elapesd: ";
             
         if(timer.elapsedSeconds()>=0.1)
             std::cout<<timer.elapsedSeconds()<<" [s]"<<"\n";
@@ -103,6 +112,6 @@ public:
 private:
     Timer timer;
     std::string name;
-    int line;
+    std::string line;
     std::chrono::steady_clock::duration* dur;
 };
