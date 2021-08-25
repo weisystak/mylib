@@ -1,3 +1,4 @@
+#pragma once
 #include <chrono>
 #include <string>
 #include <iostream>
@@ -92,19 +93,21 @@ public:
         timer.stop();
         if(dur)
             *dur = timer.get_duration();
-        else if(!name.empty())
-            std::cout<<name<<" elapsed: ";
-        else
-            std::cout<<line<<" block elapesd: ";
-            
-        if(timer.elapsedSeconds()>=0.1)
-            std::cout<<timer.elapsedSeconds()<<" [s]"<<"\n";
-        else if(timer.elapsedMilliseconds()>=0.1)
-            std::cout<<timer.elapsedMilliseconds()<<" [ms]"<<"\n";
-        else if(timer.elapsedMicroseconds()>=0.1)
-            std::cout<<timer.elapsedMicroseconds()<<" [µs]"<<"\n";
-        else
-            std::cout<<timer.elapsedNanoseconds()<<" [ns]"<<"\n";
+        else{
+            if(!name.empty())
+                std::cout<<name<<" elapsed: ";
+            else
+                std::cout<<line<<" block elapesd: ";
+                
+            if(timer.elapsedSeconds()>=0.1)
+                std::cout<<timer.elapsedSeconds()<<" [s]"<<"\n";
+            else if(timer.elapsedMilliseconds()>=0.1)
+                std::cout<<timer.elapsedMilliseconds()<<" [ms]"<<"\n";
+            else if(timer.elapsedMicroseconds()>=0.1)
+                std::cout<<timer.elapsedMicroseconds()<<" [µs]"<<"\n";
+            else
+                std::cout<<timer.elapsedNanoseconds()<<" [ns]"<<"\n";
+        }
         
 
 
