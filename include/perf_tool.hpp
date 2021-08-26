@@ -18,6 +18,7 @@ namespace Performance{
     public:
         using microseconds = std::chrono::duration<double, std::micro>;
 
+        // scalability
         measure(std::function<void(int)>&& f, int threads=std::thread::hardware_concurrency(), int repeat=5)
         :f(f),threads(threads), repeat(repeat), v(threads, std::vector<std::chrono::steady_clock::duration>(repeat))
         {
@@ -41,6 +42,31 @@ namespace Performance{
                 us.push_back(std::move(tmp));
                 remove_outlier(us[i]);
             }
+            baseline_time = mean(us[0]);
+
+        }
+
+        measure(std::function<void()>&& f, int repeat=5)
+        :f(f),threads(threads), repeat(repeat), v(1, std::vector<std::chrono::steady_clock::duration>(repeat))
+        {
+            // warmup
+            for(int i=0; i<5; ++i)
+                f(threads);
+
+
+            for(int j = 0; j < repeat; j++)
+            {
+                timer_guard tg(&v[0][j]);
+                (f)();
+            }
+            std::vector<double> tmp;
+            std::for_each(v[0].begin(), v[0].end(),  
+                            [&tmp](auto& dur){ 
+                                tmp.push_back(microseconds(dur).count());
+                            });
+                us.push_back(std::move(tmp));
+                remove_outlier(us[0]);
+            
             baseline_time = mean(us[0]);
 
         }

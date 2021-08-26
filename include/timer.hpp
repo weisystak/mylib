@@ -5,6 +5,8 @@
 #include <memory>
 #include <source_location>
 #include <sstream>
+#include "utility.hpp"
+
 
 class Timer
 {
@@ -83,16 +85,25 @@ public:
         line = ss.str();
         timer.start();
     }
-    timer_guard(std::chrono::steady_clock::duration* dur)
-    :dur(dur)
+    timer_guard(std::chrono::steady_clock::duration* dur, Performance::TimeUnit* unit)
+    :dur(dur), unit(unit)
     {
         timer.start();
     }
 
     ~timer_guard(){
         timer.stop();
-        if(dur)
+        if(dur){
             *dur = timer.get_duration();
+            if(timer.elapsedSeconds()>=0.1)
+                *unit = Performance::TimeUnit::s;
+            else if(timer.elapsedMilliseconds()>=0.1)
+                *unit = Performance::TimeUnit::ms;
+            else if(timer.elapsedMicroseconds()>=0.1)
+                *unit = Performance::TimeUnit::us;
+            else
+                *unit = Performance::TimeUnit::ns;
+        }
         else{
             if(!name.empty())
                 std::cout<<name<<" elapsed: ";
@@ -117,4 +128,5 @@ private:
     std::string name;
     std::string line;
     std::chrono::steady_clock::duration* dur;
+    Performance::TimeUnit* unit;
 };
